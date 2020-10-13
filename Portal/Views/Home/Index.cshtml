@@ -713,7 +713,7 @@
                 linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
                     { timeSeriesId: [deviceId] }, // instance json
                     {
-                        Telemetry_Data: {
+                        Average_Temperature: {
                             kind: 'numeric',
                             value: { tsx: dataName },
                             filter: null,
@@ -721,7 +721,7 @@
                         }
                     },
                     { from: startDate, to: endDate, bucketSize: '10S' }, // search span
-                    { color: 'Red', alias: 'telemetryText.toString()', includeDots: true, includeEnvelope: true }
+                    { color: 'Red', alias: 'Average_Temperature', includeDots: true, includeEnvelope: true }
                 ));
 
 
@@ -736,7 +736,7 @@
                         }
                     },
                     { from: startDate, to: endDate, bucketSize: '10S' }, // search span
-                    { color: 'yellow', alias: "Average_Humidity", includeDots: true}
+                    { color: 'yellow', alias: 'Average_Humidity', includeDots: true }
                 ));
 
                 getTsiToken();
