@@ -706,7 +706,7 @@
 
                 //Set a date range for the past 24 hours.
                 var endDate = new Date();
-                var startDate = new Date(endDate.valueOf() - 1000 * 60 * 5);
+                var startDate = new Date(endDate.valueOf() - 1000 * 60 * 10);
 
                 //https://github.com/microsoft/tsiclient/blob/b19d9f0078c8ed3104b9d664f05551664a5ae602/docs/UX.md#chart-options
 
@@ -736,7 +736,7 @@
                         if (lineChart == null) {
                             lineChart = new tsiClient.ux.LineChart(document.getElementById('tsiLineChart'));
                         }
-
+                        Console.log("Line Chart");
                         lineChart.render(transformedResult, {
                             theme: 'dark', grid: true, tooltip: true, legend: 'compact', offset: 'Local',
                         }, linechartTsqExpressions);
