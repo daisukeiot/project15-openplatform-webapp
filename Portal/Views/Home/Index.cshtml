@@ -703,7 +703,7 @@
                 console.log("Display : " + telemetryText);
                 console.log("Name    : " + telemetryName);
 
-                var dataName = '$event.' + telemetryName
+                var dataName = '$event.' + telemetryName + '.Long'
 
                 var endDate = new Date();
                 var startDate = new Date(endDate.valueOf() - 1000 * 60 * 10);
@@ -733,12 +733,6 @@
                         var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
 
                         console.log("transformedResult length " + transformedResult.length);
-                        console.log("transformedResult[0] length " + transformedResult[0].name);
-                        if (transformedResult != null) {
-                            //var timestamps = Object.keys(telemetryData);
-                        } else {
-                            console.log("transformedResult == null");
-                        }
 
                         //Create the line chart.
                         if (lineChart == null) {
