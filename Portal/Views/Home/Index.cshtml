@@ -718,7 +718,7 @@
                         }
                     },
                     { from: startDate, to: endDate, bucketSize: '10S' }, // search span
-                    { color: 'Red', includeDots: true, includeEnvelope: true }
+                    { color: 'Red', alias: telemetryText.toString(), includeDots: true, includeEnvelope: true }
                 ));
 
 
@@ -733,7 +733,7 @@
                         }
                     },
                     { from: startDate, to: endDate, bucketSize: '10S' }, // search span
-                    { color: 'yellow', includeDots: true}
+                    { color: 'yellow', alias: "Average_Humidity", includeDots: true}
                 ));
 
                 getTsiToken();
@@ -743,18 +743,16 @@
                     tsiClient.server.getTsqResults(tsiToken, `@ViewData["tsiUri"]`, linechartTsqExpressions.map(function (ae) { return ae.toTsq() })).then(function (result) {
 
                         var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
-                        var temps = transformedResult[0].Telemetry_Data[''];
-                        var humidity = transformedResult[1].Average_Humidity[''];
-                        var timestamps = Object.keys(humidity);
+                        var telemetryData = transformedResult[0].Telemetry_Data[''];
+                        var timestamps = Object.keys(telemetryData);
 
                         //Create mock positions for each timestamp since this device doesn't have position information.
                         for (var i = 0; i < timestamps.length; i++) {
                             var timestamp = timestamps[i];
-                            t = temps[timestamp].Telemetry_Data;
-                            h = humidity[timestamp].Average_Humidity;
+                            t = telemetryData[timestamp].Telemetry_Data;
 
                             //If there is a temperature and humidity value, add a data point to the map.
-                            if (t !== null && h !== null) {
+                            if (t !== null) {
                                 var timestamp = timestamps[i];
                             }
                         }
