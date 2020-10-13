@@ -694,6 +694,7 @@
             var runTsqPnP = function (deviceId) {
 
                 console.log("runTsqPnP " + deviceId);
+                linechart = null;
                 // create aggregate expressions, they are S1/S2 SKU query objects
                 var linechartTsqExpressions = [];
                 var telemetryText = $("#telemetryList option:selected").text();
@@ -738,7 +739,7 @@
                         }
                         console.log("Line Chart");
                         lineChart.render(transformedResult, {
-                            theme: 'dark', grid: true, tooltip: true, legend: 'compact', offset: 'Local',
+                            dataType: 'numeric', theme: 'dark', grid: true, tooltip: true, legend: 'compact', offset: 'Local',
                         }, linechartTsqExpressions);
                     });
                 }
