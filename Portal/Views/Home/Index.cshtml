@@ -567,6 +567,27 @@
                         connectionString = "HostName=" + '@ViewData["IoTHubName"]' + ";DeviceId=" + response.deviceId + ";SharedAccessKey=" + response.primaryKey;
                         document.getElementById('tdModelId').innerHTML = response.modelId;
                         deviceTwinString = response;
+
+                        console.log(response);
+                        var json = JSON.stringify(response);
+                        json = JSON.parse(json);
+                        console.log(Object.keys(json.telemetry).length);
+
+                        var select = document.getElementById("telemetryList");
+                        select.innerText = "";
+                        var options = [];
+
+                        for (var i = 0; i < Object.keys(json.telemetry).length; i++) {
+                            console.log("Telemetry : " + json.telemetry[i].telemetryDisplayName);
+                            console.log("Telemetry : " + json.telemetry[i].telemetryName);
+
+                            var option = document.createElement('option');
+                            option.text = json.telemetry[i].telemetryDisplayName;
+                            option.value = json.telemetry[i].telemetryName;
+                            options.push(option.outerHTML);
+                        }
+
+                        select.insertAdjacentHTML('beforeEnd', options.join('\n'));
                         enableDisableButtons(false);
                         return true;
                     },
