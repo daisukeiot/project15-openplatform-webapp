@@ -732,7 +732,7 @@
                     tsiClient.server.getTsqResults(tsiToken, `@ViewData["tsiUri"]`, linechartTsqExpressions.map(function (ae) { return ae.toTsq() })).then(function (result) {
 
                         var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
-                        var telemetryData = transformedResult[0].Telemetry_Data[''];
+                        var telemetryData = transformedResult.Telemetry_Data[''];
                         var timestamps = Object.keys(telemetryData);
 
                         console.log("Telemetry Data " + timestamps.length);
