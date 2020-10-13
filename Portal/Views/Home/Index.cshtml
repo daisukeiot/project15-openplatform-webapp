@@ -721,7 +721,7 @@
                         }
                     },
                     { from: startDate, to: endDate, bucketSize: '10S' }, // search span
-                    { color: 'Red', alias: 'Telemetry Data', includeDots: true, includeEnvelope: true }
+                    { color: 'Red', alias: 'Telemetry_Data', includeDots: true, includeEnvelope: true }
                 ));
 
 
@@ -755,6 +755,11 @@
                         //    var timestamp = timestamps[i];
                         //    t = temps[timestamp].Telemetry_Data;
                         //    h = humidity[timestamp].Average_Humidity;
+
+                        //    //If there is a temperature and humidity value, add a data point to the map.
+                        //    if (t !== null && h !== null) {
+                        //        var timestamp = timestamps[i];
+                        //    }
                         //}
 
                         //Create the line chart.
