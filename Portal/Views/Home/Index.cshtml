@@ -775,6 +775,10 @@
                 // create aggregate expressions, they are S1/S2 SKU query objects
                 var linechartTsqExpressions = [];
 
+                if (telemetryName == "") {
+                    return;
+                }
+
                 //Set a date range for the past 24 hours.
                 var endDate = new Date();
                 var startDate = new Date(endDate.valueOf() - 1000 * 60 * 5);
