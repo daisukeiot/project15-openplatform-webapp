@@ -724,21 +724,6 @@
                     { color: 'Red', alias: 'Telemetry_Data', includeDots: true, includeEnvelope: true }
                 ));
 
-
-                linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
-                    { timeSeriesId: [deviceId] }, // instance json
-                    {
-                        Average_Humidity: {
-                            kind: 'numeric',
-                            value: { tsx: dataName },
-                            filter: null,
-                            aggregation: { tsx: 'avg($value)' }
-                        }
-                    },
-                    { from: startDate, to: endDate, bucketSize: '10S' }, // search span
-                    { color: 'yellow', alias: 'Average_Humidity', includeDots: true}
-                ));
-
                 getTsiToken();
 
                 if (tsiToken.length > 0) {
@@ -783,6 +768,21 @@
                     },
                     { from: startDate, to: endDate, bucketSize: '10S' }, // search span
                     { color: 'Red', alias: 'Average_Temperature', includeDots: true, includeEnvelope: true }
+                ));
+
+
+                linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
+                    { timeSeriesId: [deviceId] }, // instance json
+                    {
+                        Average_Humidity: {
+                            kind: 'numeric',
+                            value: { tsx: humidityTsx },
+                            filter: null,
+                            aggregation: { tsx: 'avg($value)' }
+                        }
+                    },
+                    { from: startDate, to: endDate, bucketSize: '10S' }, // search span
+                    { color: 'yellow', alias: 'Average_Humidity', includeDots: true}
                 ));
 
                 getTsiToken();
