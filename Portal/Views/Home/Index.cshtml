@@ -4,10 +4,10 @@
 }
 <div id="pagebody">
     @*<div class="header" style="font-size: 200%;">
-        <p style="float: left;margin: auto;align-items: stretch;">
-            <strong>Azure IoT Hub : @ViewData["IoTHubName"]</strong>
-        </p>
-    </div>*@
+            <p style="float: left;margin: auto;align-items: stretch;">
+                <strong>Azure IoT Hub : @ViewData["IoTHubName"]</strong>
+            </p>
+        </div>*@
     <div style="top: 0; width: 100%;">
 
     </div>
@@ -95,7 +95,6 @@
                     <div id="tsiChart" style="display:none; height:2em;">
                         <div id="tsiLineChart" style="position:relative;width: 100%;height:calc(30vh - 2em); margin: 0px;"></div>
                         <button type="button" id="btnRefreshTsi"><i class="fas fa-sync"></i>Refresh</button>
-                        <select id="telemetryList" name="telemetryList"></select>
                     </div>
                 </fieldset>
             </div>
@@ -128,6 +127,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="column" style="padding-left:5px">
+                                        &nbsp;
                                     </div>
                                 </div>
                                 <div class="row">
@@ -325,7 +325,6 @@
             var deviceKeyPrimary = "";
             var deviceKeySecondary = "";
             var deviceTwinString = "";
-            var telemetryList = "";
 
             var tsiToken = "";
             var tsiClient
@@ -405,14 +404,6 @@
                     enableDisableButtons(true);
                     clearDeviceInfo();
                 }
-            });
-
-            $('#telemetryList').change(function () {
-                var telemetryText = $("#telemetryList option:selected").text();
-                var telemetryName = $("#telemetryList option:selected").val();
-                console.log("Telemetry : " + telemetryText);
-                console.log("Telemetry Name : " + telemetryName);
-
             });
 
             //
@@ -553,28 +544,6 @@
                     url: '@Url.Action("GetDevice", "IoTHub")',
                     data: { deviceId: deviceId },
                     success: function (response) {
-                        console.log(response);
-                        var json = JSON.stringify(response);
-                        json = JSON.parse(json);
-                        console.log(Object.keys(json.telemetry).length);
-
-                        var select = document.getElementById("telemetryList");
-                        select.innerText  = "";
-                        var options = [];
-
-                        for (var i = 0; i < Object.keys(json.telemetry).length; i++) {
-                            console.log("Telemetry : " + json.telemetry[i].telemetryDisplayName);
-                            console.log("Telemetry : " + json.telemetry[i].telemetryName);
-
-                            var option = document.createElement('option');
-                            option.text = json.telemetry[i].telemetryDisplayName;
-                            option.value = json.telemetry[i].telemetryName;
-                            options.push(option.outerHTML);
-                            //select.add(option, 0);
-                        }
-
-                        select.insertAdjacentHTML('beforeEnd', options.join('\n'));
-
                         document.getElementById('tdConnectionStatus').innerHTML = response.connectionState;
                         if (response.connectionState == "Connected") {
                             btnConnect.innerHTML = '<i class="fa fa-unlink" style="width: 1.5em"></i>Disconnect'
@@ -691,7 +660,6 @@
             }
 
             var runTsq = function (deviceId) {
-                var telemetryName = $("#telemetryList option:selected").val();
 
                 console.log("runTsq " + deviceId);
                 // create aggregate expressions, they are S1/S2 SKU query objects
@@ -703,8 +671,6 @@
 
                 //https://github.com/microsoft/tsiclient/blob/b19d9f0078c8ed3104b9d664f05551664a5ae602/docs/UX.md#chart-options
 
-                var dataName = '$event.' + telemetryName;
-                console.log("tsx : " + temperatureTsx + "dataName : " + dataName);
                 linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
                     { timeSeriesId: [deviceId] }, // instance json
                     {
@@ -718,6 +684,7 @@
                     { from: startDate, to: endDate, bucketSize: '10S' }, // search span
                     { color: 'Red', alias: 'Average_Temperature', includeDots: true, includeEnvelope: true }
                 ));
+
 
                 linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
                     { timeSeriesId: [deviceId] }, // instance json
@@ -766,72 +733,9 @@
                         }, linechartTsqExpressions);
                     });
                 }
+
             };
 
-            var runTsqPnP = function (deviceId) {
-
-                var telemetryText = $("#telemetryList option:selected").text();
-                var telemetryName = $("#telemetryList option:selected").val();
-                console.log("runTsqPnP " + deviceId + "Telemetry " + telemetryName);
-                var linechartTsqExpressions = [];
-
-                //Set a date range for the past 24 hours.
-                var endDate = new Date();
-                var startDate = new Date(endDate.valueOf() - 1000 * 60 * 5);
-
-                //https://github.com/microsoft/tsiclient/blob/b19d9f0078c8ed3104b9d664f05551664a5ae602/docs/UX.md#chart-options
-
-                var dataName = '$event.' + telemetryName;
-
-                console.log("Event " + dataName)
-
-                linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
-                    { timeSeriesId: [deviceId] }, // instance json
-                    {
-                        Average_Temperature: {
-                            kind: 'numeric',
-                            value: { tsx: dataName },
-                            filter: null,
-                            aggregation: { tsx: 'avg($value)' }
-                        }
-                    },
-                    { from: startDate, to: endDate, bucketSize: '10S' }, // search span
-                    { color: 'Red', alias: 'Test', includeDots: true, includeEnvelope: true }
-                ));
-
-                getTsiToken();
-                console.log("<<getTsiToken()");
-
-                if (tsiToken.length > 0) {
-                    console.log(" getTsiToken.length > 0");
-                    tsiClient.server.getTsqResults(tsiToken, `@ViewData["tsiUri"]`, linechartTsqExpressions.map(function (ae) { return ae.toTsq() })).then(function (result) {
-
-                        var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
-                        var temps = transformedResult[0].Average_Temperature[''];
-                        var timestamps = Object.keys(humidity);
-
-                        //Create mock positions for each timestamp since this device doesn't have position information.
-                        for (var i = 0; i < timestamps.length; i++) {
-                            var timestamp = timestamps[i];
-                            t = temps[timestamp].Average_Temperature;
-
-                            //If there is a temperature and humidity value, add a data point to the map.
-                            if (t !== null) {
-                                var timestamp = timestamps[i];
-                            }
-                        }
-
-                        //Create the line chart.
-                        if (lineChart == null) {
-                            lineChart = new tsiClient.ux.LineChart(document.getElementById('tsiLineChart'));
-                        }
-
-                        lineChart.render(transformedResult, {
-                            theme: 'dark', grid: true, tooltip: true, legend: 'compact', offset: 'Local',
-                        }, linechartTsqExpressions);
-                    });
-                }
-            };
             //
             // Initialization on page load
             //
