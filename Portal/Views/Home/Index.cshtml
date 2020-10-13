@@ -344,9 +344,19 @@
             //
             // Button click event handlers
             //
+
+            $('#telemetryList').change(function () {
+                var telemetryText = $("#telemetryList option:selected").text();
+                var telemetryName = $("#telemetryList option:selected").val();
+                console.log("Telemetry : " + telemetryText);
+                console.log("Telemetry Name : " + telemetryName);
+                var targetDeviceId = $("#DeviceList option:selected").text();
+                runTsqPnP(targetDeviceId)
+            });
+
             $("#btnRefreshTsi").click(function () {
                 var targetDeviceId = $("#DeviceList option:selected").text();
-                runTsq(targetDeviceId)
+                runTsqPnP(targetDeviceId)
             })
 
             $("#btnAddDevicePopup").click(function () {
@@ -400,7 +410,7 @@
                 if (targetDeviceId.length > 0) {
                     console.log("Selected " + targetDeviceId);
                     getDeviceInfo(targetDeviceId);
-                    runTsq(targetDeviceId);
+                    runTsqPnP(targetDeviceId);
                 } else {
                     enableDisableButtons(true);
                     clearDeviceInfo();
@@ -660,6 +670,82 @@
                 });
             }
 
+            var runTsqPnP = function (deviceId) {
+
+                console.log("runTsqPnP " + deviceId);
+                // create aggregate expressions, they are S1/S2 SKU query objects
+                var linechartTsqExpressions = [];
+
+                //Set a date range for the past 24 hours.
+                var endDate = new Date();
+                var startDate = new Date(endDate.valueOf() - 1000 * 60 * 5);
+
+                //https://github.com/microsoft/tsiclient/blob/b19d9f0078c8ed3104b9d664f05551664a5ae602/docs/UX.md#chart-options
+
+                linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
+                    { timeSeriesId: [deviceId] }, // instance json
+                    {
+                        Average_Temperature: {
+                            kind: 'numeric',
+                            value: { tsx: temperatureTsx },
+                            filter: null,
+                            aggregation: { tsx: 'avg($value)' }
+                        }
+                    },
+                    { from: startDate, to: endDate, bucketSize: '10S' }, // search span
+                    { color: 'Red', alias: 'Average_Temperature', includeDots: true, includeEnvelope: true }
+                ));
+
+
+                linechartTsqExpressions.push(new tsiClient.ux.TsqExpression(
+                    { timeSeriesId: [deviceId] }, // instance json
+                    {
+                        Average_Humidity: {
+                            kind: 'numeric',
+                            value: { tsx: humidityTsx },
+                            filter: null,
+                            aggregation: { tsx: 'avg($value)' }
+                        }
+                    },
+                    { from: startDate, to: endDate, bucketSize: '10S' }, // search span
+                    { color: 'yellow', alias: 'Average_Humidity', includeDots: true}
+                ));
+
+                getTsiToken();
+
+                if (tsiToken.length > 0) {
+
+                    tsiClient.server.getTsqResults(tsiToken, `@ViewData["tsiUri"]`, linechartTsqExpressions.map(function (ae) { return ae.toTsq() })).then(function (result) {
+
+                        var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
+                        var temps = transformedResult[0].Average_Temperature[''];
+                        var humidity = transformedResult[1].Average_Humidity[''];
+                        var timestamps = Object.keys(humidity);
+
+                        //Create mock positions for each timestamp since this device doesn't have position information.
+                        for (var i = 0; i < timestamps.length; i++) {
+                            var timestamp = timestamps[i];
+                            t = temps[timestamp].Average_Temperature;
+                            h = humidity[timestamp].Average_Humidity;
+
+                            //If there is a temperature and humidity value, add a data point to the map.
+                            if (t !== null && h !== null) {
+                                var timestamp = timestamps[i];
+                            }
+                        }
+
+                        //Create the line chart.
+                        if (lineChart == null) {
+                            lineChart = new tsiClient.ux.LineChart(document.getElementById('tsiLineChart'));
+                        }
+
+                        lineChart.render(transformedResult, {
+                            theme: 'dark', grid: true, tooltip: true, legend: 'compact', offset: 'Local',
+                        }, linechartTsqExpressions);
+                    });
+                }
+            };
+
             var runTsq = function (deviceId) {
 
                 console.log("runTsq " + deviceId);
@@ -734,7 +820,6 @@
                         }, linechartTsqExpressions);
                     });
                 }
-
             };
 
             //
