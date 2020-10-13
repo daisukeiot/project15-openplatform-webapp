@@ -80,7 +80,7 @@ namespace Portal.Controllers
 
             // Make request
             // string modelContent = await _httpClient.GetStringAsync(fullyQualifiedPath);
-            wc.Headers.Add("Authorization", "token 45f5b80ca6b29edd2961921f36c5732b6ed1f279");
+            wc.Headers.Add("Authorization", "token eafa116a346f1f64f0dbc51f5ccef6f67ee956fe");
             var modelContent = wc.DownloadString(fullyQualifiedPath);
 
             return modelContent;
