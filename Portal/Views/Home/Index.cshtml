@@ -696,6 +696,10 @@
                 console.log("runTsqPnP " + deviceId);
                 // create aggregate expressions, they are S1/S2 SKU query objects
                 var linechartTsqExpressions = [];
+                var telemetryText = $("#telemetryList option:selected").text();
+                var telemetryName = $("#telemetryList option:selected").val();
+
+                var dataName = '$event.' + telemetryName
 
                 //Set a date range for the past 24 hours.
                 var endDate = new Date();
@@ -708,7 +712,7 @@
                     {
                         Average_Temperature: {
                             kind: 'numeric',
-                            value: { tsx: temperatureTsx },
+                            value: { tsx: dataName },
                             filter: null,
                             aggregation: { tsx: 'avg($value)' }
                         }
