@@ -705,7 +705,6 @@
 
                 var dataName = '$event.' + telemetryName
 
-                //Set a date range for the past 24 hours.
                 var endDate = new Date();
                 var startDate = new Date(endDate.valueOf() - 1000 * 60 * 10);
 
@@ -716,7 +715,7 @@
                     {
                         Telemetry_Data: {
                             kind: 'numeric',
-                            value: { tsx: '$event.[telemetryName]' },
+                            value: { tsx: dataName },
                             filter: null,
                             aggregation: { tsx: 'avg($value)' }
                         }
