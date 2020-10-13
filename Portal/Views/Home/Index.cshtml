@@ -583,7 +583,7 @@
 
                             var option = document.createElement('option');
                             option.text = json.telemetry[i].telemetryDisplayName + " (" + json.telemetry[i].unit + ")  ";
-                            option.value = json.telemetry[i].telemetryName;
+                            option.value = json.telemetry[i].telemetryName + ";" + json.telemetry[i].dataType;
                             options.push(option.outerHTML);
                         }
 
@@ -698,12 +698,15 @@
                 // create aggregate expressions, they are S1/S2 SKU query objects
                 var linechartTsqExpressions = [];
                 var telemetryText = $("#telemetryList option:selected").text();
-                var telemetryName = $("#telemetryList option:selected").val();
+                var telemetryValue = $("#telemetryList option:selected").val();
+
+                var telemetryName = telemetryValue.split(";")[0]
+                var telemetryUnit = telemetryValue.split(";")[1]
 
                 console.log("Display : " + telemetryText);
                 console.log("Name    : " + telemetryName);
 
-                var dataName = '$event.' + telemetryName + '.Long'
+                var dataName = '$event.' + telemetryName + '.' + telemetryUnit
 
                 var endDate = new Date();
                 var startDate = new Date(endDate.valueOf() - 1000 * 60 * 10);

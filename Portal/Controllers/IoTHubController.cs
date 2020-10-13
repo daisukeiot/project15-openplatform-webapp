@@ -188,6 +188,8 @@ namespace Portal.Controllers
                                         data.unit = unitInfo.Symbol;
                                     }
                                 }
+
+                                data.dataType = telemetryInfo.Schema.EntityKind == DTEntityKind.Integer ? "Long" : "Double";
                                 data.TelemetryName = telemetryInfo.Name;
                                 //data.TelemetryType = telemetryInfo.Schema;
                                 deviceData.telemetry.Add(data);

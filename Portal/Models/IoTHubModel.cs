@@ -11,6 +11,7 @@ namespace Portal.Models
         public string TelemetryType { get; set; }
         public string TelemetryDisplayName { get; set; }
         public string unit { get; set; }
+        public string dataType { get; set; }
     }
     public class DEVICE_DATA
     {
