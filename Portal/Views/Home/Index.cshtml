@@ -699,6 +699,9 @@
                 var telemetryText = $("#telemetryList option:selected").text();
                 var telemetryName = $("#telemetryList option:selected").val();
 
+                console.log("Display : " + telemetryText);
+                console.log("Name    : " + telemetryName);
+
                 var dataName = '$event.' + telemetryName
 
                 //Set a date range for the past 24 hours.
