@@ -718,7 +718,7 @@
                         }
                     },
                     { from: startDate, to: endDate, bucketSize: '10S' }, // search span
-                    { color: 'Red', alias: 'Average_Temperature', includeDots: true, includeEnvelope: true }
+                    { color: 'Red', alias: telemetryText, includeDots: true, includeEnvelope: true }
                 ));
 
 
@@ -733,7 +733,7 @@
                         }
                     },
                     { from: startDate, to: endDate, bucketSize: '10S' }, // search span
-                    { color: 'yellow', alias: telemetryText, includeDots: true}
+                    { color: 'yellow', alias: 'Average_Humidity', includeDots: true}
                 ));
 
                 getTsiToken();
@@ -745,15 +745,16 @@
                         var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
                         var temps = transformedResult[0].Average_Temperature[''];
                         var humidity = transformedResult[1].Average_Humidity[''];
-                        var timestamps = Object.keys(telemetryName);
+                        var timestamps = Object.keys(humidity);
 
                         //Create mock positions for each timestamp since this device doesn't have position information.
                         for (var i = 0; i < timestamps.length; i++) {
                             var timestamp = timestamps[i];
                             t = temps[timestamp].Average_Temperature;
+                            h = humidity[timestamp].Average_Humidity;
 
                             //If there is a temperature and humidity value, add a data point to the map.
-                            if (t !== null) {
+                            if (t !== null && h !== null) {
                                 var timestamp = timestamps[i];
                             }
                         }
