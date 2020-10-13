@@ -715,7 +715,7 @@
                     {
                         Average_Temperature: {
                             kind: 'numeric',
-                            value: { tsx: dataName },
+                            value: { tsx: temperatureTsx },
                             filter: null,
                             aggregation: { tsx: 'avg($value)' }
                         }
@@ -730,13 +730,13 @@
                     {
                         Average_Humidity: {
                             kind: 'numeric',
-                            value: { tsx: dataName },
+                            value: { tsx: humidityTsx },
                             filter: null,
                             aggregation: { tsx: 'avg($value)' }
                         }
                     },
                     { from: startDate, to: endDate, bucketSize: '10S' }, // search span
-                    { color: 'yellow', alias: 'Average_Humidity', includeDots: true }
+                    { color: 'yellow', alias: 'Average_Humidity', includeDots: true}
                 ));
 
                 getTsiToken();
@@ -746,18 +746,18 @@
                     tsiClient.server.getTsqResults(tsiToken, `@ViewData["tsiUri"]`, linechartTsqExpressions.map(function (ae) { return ae.toTsq() })).then(function (result) {
 
                         var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
-                        var telemetryData = transformedResult[0].Telemetry_Data[''];
+                        var temps = transformedResult[0].Average_Temperature[''];
                         var humidity = transformedResult[1].Average_Humidity[''];
                         var timestamps = Object.keys(humidity);
-                        //var timestamps = Object.keys(telemetryData);
 
                         //Create mock positions for each timestamp since this device doesn't have position information.
                         for (var i = 0; i < timestamps.length; i++) {
                             var timestamp = timestamps[i];
-                            t = telemetryData[timestamp].Telemetry_Data;
+                            t = temps[timestamp].Average_Temperature;
+                            h = humidity[timestamp].Average_Humidity;
 
                             //If there is a temperature and humidity value, add a data point to the map.
-                            if (t !== null) {
+                            if (t !== null && h !== null) {
                                 var timestamp = timestamps[i];
                             }
                         }
