@@ -745,16 +745,15 @@
                         var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
                         var temps = transformedResult[0].Average_Temperature[''];
                         var humidity = transformedResult[1].Average_Humidity[''];
-                        var timestamps = Object.keys(humidity);
+                        var timestamps = Object.keys(telemetryName);
 
                         //Create mock positions for each timestamp since this device doesn't have position information.
                         for (var i = 0; i < timestamps.length; i++) {
                             var timestamp = timestamps[i];
                             t = temps[timestamp].Average_Temperature;
-                            h = humidity[timestamp].Average_Humidity;
 
                             //If there is a temperature and humidity value, add a data point to the map.
-                            if (t !== null && h !== null) {
+                            if (t !== null) {
                                 var timestamp = timestamps[i];
                             }
                         }
