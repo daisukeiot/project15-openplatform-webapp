@@ -732,8 +732,8 @@
 
                         var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
 
+                        console.log("transformedResult length " + transformedResult.length);
                         if (transformedResult != null) {
-                            var telemetryData = transformedResult.Telemetry_Data[''];
                             //var timestamps = Object.keys(telemetryData);
                         } else {
                             console.log("transformedResult == null");
