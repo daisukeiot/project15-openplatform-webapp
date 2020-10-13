@@ -721,7 +721,7 @@
                         }
                     },
                     { from: startDate, to: endDate, bucketSize: '10S' }, // search span
-                    { color: 'Red', includeDots: true, includeEnvelope: true }
+                    { color: 'Red', alias: 'Telemetry Data', includeDots: true, includeEnvelope: true }
                 ));
 
 
@@ -751,16 +751,11 @@
                         var timestamps = Object.keys(humidity);
 
                         //Create mock positions for each timestamp since this device doesn't have position information.
-                        for (var i = 0; i < timestamps.length; i++) {
-                            var timestamp = timestamps[i];
-                            t = temps[timestamp].Telemetry_Data;
-                            h = humidity[timestamp].Average_Humidity;
-
-                            //If there is a temperature and humidity value, add a data point to the map.
-                            if (t !== null && h !== null) {
-                                var timestamp = timestamps[i];
-                            }
-                        }
+                        //for (var i = 0; i < timestamps.length; i++) {
+                        //    var timestamp = timestamps[i];
+                        //    t = temps[timestamp].Telemetry_Data;
+                        //    h = humidity[timestamp].Average_Humidity;
+                        //}
 
                         //Create the line chart.
                         if (lineChart == null) {
