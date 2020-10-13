@@ -582,7 +582,7 @@
                             console.log("Telemetry : " + json.telemetry[i].telemetryName);
 
                             var option = document.createElement('option');
-                            option.text = json.telemetry[i].telemetryDisplayName;
+                            option.text = json.telemetry[i].telemetryDisplayName + " (" + json.telemetry[i].unit + ")  ";
                             option.value = json.telemetry[i].telemetryName;
                             options.push(option.outerHTML);
                         }
