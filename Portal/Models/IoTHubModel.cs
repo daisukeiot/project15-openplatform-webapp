@@ -5,6 +5,13 @@ using System.Threading.Tasks;
 
 namespace Portal.Models
 {
+    public class TELEMETRY_DATA
+    {
+        public string TelemetryName { get; set; }
+        public string TelemetryType { get; set; }
+        public string TelemetryDisplayName { get; set; }
+        public string unit { get; set; }
+    }
     public class DEVICE_DATA
     {
         public string deviceId { get; set; }
@@ -15,5 +22,6 @@ namespace Portal.Models
         public string secondaryKey { get; set; }
         public string connectionString { get; set; }
         public string modelId { get; set; }
+        public List<TELEMETRY_DATA> telemetry { get; set; }
     }
 }
