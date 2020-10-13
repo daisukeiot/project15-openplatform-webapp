@@ -732,10 +732,14 @@
                     tsiClient.server.getTsqResults(tsiToken, `@ViewData["tsiUri"]`, linechartTsqExpressions.map(function (ae) { return ae.toTsq() })).then(function (result) {
 
                         var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
-                        var telemetryData = transformedResult.Telemetry_Data[''];
-                        var timestamps = Object.keys(telemetryData);
 
-                        console.log("Telemetry Data " + timestamps.length);
+                        if (transformedResult != null) {
+                            var telemetryData = transformedResult.Telemetry_Data[''];
+                            var timestamps = Object.keys(telemetryData);
+                        } else {
+                            console.log("transformedResult == null");
+                        }
+
                         //Create the line chart.
                         if (lineChart == null) {
                             lineChart = new tsiClient.ux.LineChart(document.getElementById('tsiLineChart'));
