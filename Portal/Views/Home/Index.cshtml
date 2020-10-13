@@ -733,12 +733,12 @@
 
                         var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
 
-                        if (transformedResult != null) {
-                            var telemetryData = transformedResult.Telemetry_Data[''];
-                            var timestamps = Object.keys(telemetryData);
-                        } else {
-                            console.log("transformedResult == null");
-                        }
+                        //if (transformedResult != null) {
+                        //    var telemetryData = transformedResult.Telemetry_Data[''];
+                        //    var timestamps = Object.keys(telemetryData);
+                        //} else {
+                        //    console.log("transformedResult == null");
+                        //}
 
                         //Create the line chart.
                         if (lineChart == null) {
