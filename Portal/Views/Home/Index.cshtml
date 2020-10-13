@@ -716,7 +716,7 @@
                     {
                         Telemetry_Data: {
                             kind: 'numeric',
-                            value: { tsx: dataName },
+                            value: { tsx: '$event.[telemetryName]' },
                             filter: null,
                             aggregation: { tsx: 'avg($value)' }
                         }
