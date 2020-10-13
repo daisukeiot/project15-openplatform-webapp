@@ -32,12 +32,18 @@ namespace Portal.Models
         public string humidityName { get; set; }
     };
 
+    public class GitHub
+    {
+        public string token { get; set; }
+    }
+
     public class AppSettings
     {
         public SignalrSetting SignalR { get; set; }
         public IotHubSetting IoTHub { get; set; }
         public AzureMap AzureMap { get; set; }
         public TimeSeriesInsights TimeSeriesInsights { get; set; }
+        public GitHub GitHub { get; set; }
     }
 
     //public class AzureSetting

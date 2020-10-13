@@ -29,13 +29,14 @@ namespace Portal.Controllers
         private const string _repositoryEndpoint = "https://raw.githubusercontent.com/daisukeiot/azure-dtdl-repository/main";
         private readonly ILogger<IoTHubController> _logger;
         private readonly AppSettings _appSettings;
+        private string _gitToken;
         private IIoTHubHelper _helper;
-        private static HttpClient _httpClient;
 
-        public IoTHubController(IIoTHubHelper helper)
+        public IoTHubController(IIoTHubHelper helper, IOptions<AppSettings> optionsAccessor)
         {
             _helper = helper;
-            _httpClient = new HttpClient();
+            _appSettings = optionsAccessor.Value;
+            _gitToken = _appSettings.GitHub.token;
         }
 
         private IoTHubController(IIoTHubHelper helper, IOptions<AppSettings> optionsAccessor, ILogger<IoTHubController> logger)
@@ -80,7 +81,8 @@ namespace Portal.Controllers
 
             // Make request
             // string modelContent = await _httpClient.GetStringAsync(fullyQualifiedPath);
-            wc.Headers.Add("Authorization", "token eafa116a346f1f64f0dbc51f5ccef6f67ee956fe");
+            var token = $"token {_gitToken}";
+            wc.Headers.Add("Authorization", token);
             var modelContent = wc.DownloadString(fullyQualifiedPath);
 
             return modelContent;
