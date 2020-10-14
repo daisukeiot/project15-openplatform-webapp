@@ -590,6 +590,9 @@
                         //var table = document.getElementById("commandTable");
                         var commandModal = document.getElementById("commandModal");
 
+                        while (commandModal.firstChild) {
+                            commandModal.removeChild(commandModal.firstChild);
+                        }
                         //while (table.rows.length > 1) {
                         //    table.deleteRow(table.rows.length - 1);
                         //}
@@ -604,33 +607,37 @@
                             var divParam = document.createElement("div");
                             var paramInput = document.createElement("input");
 
-                            legend.innerHTML = response[i].commandDisplayName;
+                            console.log("obj %o", response[i].commandDisplayName);
+                            if (response[i].commandDisplayName == null) {
+                                legend.innerHTML = response[i].commandName;
+                            } else {
+                                legend.innerHTML = response[i].commandDisplayName;
+                            }
+
                             fieldSet.appendChild(legend);
 
                             divDesc.innerHTML = response[i].commandDescription;
                             fieldSet.appendChild(divDesc);
 
-                            divCmd.setAttribute('id', response[i].commandName);
+                            divCmd.setAttribute('id', i + '-command');
                             divCmd.innerHTML = 'Command Name : ' + response[i].commandName;
                             fieldSet.appendChild(divCmd);
 
-                            divCmd.setAttribute('id', response[i].commandName + '-param');
+                            divParam.setAttribute('id', i + '-param');
                             divParam.innerHTML = 'Command Parameter : ' + response[i].requestName + ' (' + response[i].requestKind + ')';
                             fieldSet.appendChild(divParam);
 
-                            paramInput.id = "param" + response[i].commandName;
+                            paramInput.id = i + '-request';
                             fieldSet.appendChild(paramInput);
 
                             var button = document.createElement('input');
-                            button.setAttribute('id', 'btn-' + response[i].commandName);
+                            button.setAttribute('id', i + '-btn');
                             button.setAttribute('type', 'button');
                             button.setAttribute('value', 'Run Command');
                             button.setAttribute('onclick', 'RunCommand("' + response[i].commandName + '")');
                             fieldSet.appendChild(button);
 
-
                             commandModal.appendChild(fieldSet);
-
 
                             //var row = table.insertRow(table.rows.length);
                             //var cell1 = row.insertCell(0);
