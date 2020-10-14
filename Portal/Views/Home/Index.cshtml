@@ -173,7 +173,7 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="column" style="padding-right:0.5em;padding-left:5px">
-                                        Connection State
+                                        <i class="fas fa-info-circle" style="width:1.5em"></i>Connection State
                                     </div>
                                     <div class="column" id="tdConnectionStatus" style="width:28em;">
                                         &nbsp;
@@ -181,7 +181,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="column" style="padding-right:0.5em;padding-left:5px">
-                                        Status
+                                        <i class="fas fa-info-circle" style="width:1.5em"></i>Status
                                     </div>
                                     <div class="column" id="tdState">
                                         &nbsp;
@@ -189,7 +189,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="column" style="padding-right:0.5em;padding-left:5px">
-                                        IoT PnP Model ID
+                                        <i class="fas fa-info-circle" style="width:1.5em"></i>IoT PnP Model ID
                                     </div>
                                     <div class="column" id="tdModelId">
                                         &nbsp;
@@ -733,12 +733,14 @@
                     document.getElementById("btnSecondaryKeyCopy").disabled = disableButton;
                     document.getElementById("btnConnect").disabled = disableButton;
                     document.getElementById("btnTelemetry").disabled = disableButton;
+                    document.getElementById("btnDeviceCommand").disabled = disableButton;
                 } else {
                     document.getElementById("btnConnectionStringCopy").disabled = disableButton;
                     document.getElementById("btnPrimaryKeyCopy").disabled = disableButton;
                     document.getElementById("btnSecondaryKeyCopy").disabled = disableButton;
                     document.getElementById("btnConnect").disabled = disableButton;
                     document.getElementById("btnTelemetry").disabled = disableButton;
+                    document.getElementById("btnDeviceCommand").disabled = disableButton;
                 }
                 document.getElementById("btnSetModelPopup").disabled = disableButton;
                 document.getElementById("btnDeviceTwin").disabled = disableButton;
