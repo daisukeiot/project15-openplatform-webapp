@@ -83,6 +83,30 @@
         </div>
     </div>
 
+    <div class="modal fade" id="ModalSendCommand" role="dialog" style="">
+        <div class="modal-dialog err-pop" style="width: 50vw;background-color: rgb(242, 242,242);">
+            <div class="modal-content" id="ModelIdModal">
+                <div class="header" style="text-align: center;margin: auto;align-items: stretch;display: flow-root">
+                    <strong>Send Command</strong>
+                </div>
+                <div class="modal-body" width="100%" id="commandModal">
+                    @*<table id="commandTable" width="100%">
+                        <tr>
+                            <th width="30%">Command Name</th>
+                            <th width="30%">Command</th>
+                            <th width="30%">Parameter</th>
+                            <th></th>
+                        </tr>
+                    </table>*@
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnSetModel" style="width:45%;padding:3.5px;"><i class="fas fa-plus"></i>Set Model ID</button>
+                    <button type="button" id="DivClose" style="width:45%;padding:3.5px;" data-dismiss="modal"><i class="fas fa-times"></i>Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="main_contents" style="height:auto;display:block">
         <div style="display:flex">
             <div class="column" style="width:50%;margin-right:1px;height:auto">
@@ -133,6 +157,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="column">
+                                        &nbsp;
                                     </div>
                                 </div>
                                 <div class="row">
@@ -214,7 +239,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="column" style="padding-right:0.5em;">
-                                        &nbsp;
+                                        <button type="button" id="btnDeviceCommand"><i class="far fa-file-code" style="width:1.5em"></i>Command</button>
                                     </div>
                                 </div>
 
@@ -398,9 +423,23 @@
                         }
                     });
                 };
-
-
             })
+
+            //
+            // Retrieves Device Command
+            //
+            $("#btnDeviceCommand").click(function () {
+                var modelId = $("#tdModelId").text();
+                console.log("Get Command for : " + modelId);
+                var commandJson = getDeviceCommand(modelId)
+                console.log("Get Command Response : " + JSON.stringify(commandJson));
+                //var commands = JSON.json(commandJson);
+
+                //for (var i = 0; i < Object.keys(commands).length; i++) {
+                //    console.log(commands[i].CommanName);
+                //}
+            })
+
 
             //
             // Gets list of devices from IoT Hub and fill the dropdown list
@@ -544,6 +583,84 @@
                 };
             });
 
+
+            var getDeviceCommand = function (modelid) {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("GetCommand", "IoTHub")',
+                    data: { modelid: modelid },
+                    success: function (response) {
+                        var json = JSON.stringify(response);
+                        console.log("Get Command : " + json);
+                        console.log("Get Length : " + response.length);
+                        //var table = document.getElementById("commandTable");
+                        var commandModal = document.getElementById("commandModal");
+
+                        //while (table.rows.length > 1) {
+                        //    table.deleteRow(table.rows.length - 1);
+                        //}
+
+                        for (var i = 0; i < response.length; i++) {
+                            console.log("Command : " + response[i].commandName);
+
+                            var fieldSet = document.createElement("fieldset");
+                            var legend = document.createElement("legend");
+                            var divDesc = document.createElement("div");
+                            var divCmd = document.createElement("div");
+                            var divParam = document.createElement("div");
+                            var paramInput = document.createElement("input");
+
+                            legend.innerHTML = response[i].commandDisplayName;
+                            fieldSet.appendChild(legend);
+
+                            divDesc.innerHTML = response[i].commandDescription;
+                            fieldSet.appendChild(divDesc);
+
+                            divCmd.setAttribute('id', response[i].commandName);
+                            divCmd.innerHTML = 'Command Name : ' + response[i].commandName;
+                            fieldSet.appendChild(divCmd);
+
+                            divCmd.setAttribute('id', response[i].commandName + '-param');
+                            divParam.innerHTML = 'Command Parameter : ' + response[i].requestName + ' (' + response[i].requestKind + ')';
+                            fieldSet.appendChild(divParam);
+
+                            paramInput.id = "param" + response[i].commandName;
+                            fieldSet.appendChild(paramInput);
+
+                            var button = document.createElement('input');
+                            button.setAttribute('id', 'btn-' + response[i].commandName);
+                            button.setAttribute('type', 'button');
+                            button.setAttribute('value', 'Run Command');
+                            button.setAttribute('onclick', 'RunCommand("' + response[i].commandName + '")');
+                            fieldSet.appendChild(button);
+
+
+                            commandModal.appendChild(fieldSet);
+
+
+                            //var row = table.insertRow(table.rows.length);
+                            //var cell1 = row.insertCell(0);
+                            //var cell2 = row.insertCell(1);
+                            //var cell3 = row.insertCell(2);
+                            //var cell4 = row.insertCell(3);
+
+                            //cell1.innerHTML = response[i].commandDisplayName;
+                            //cell2.innerHTML = response[i].commandName;
+                            //var paramInput = document.createElement("input");
+                            //paramInput.id = "param" + response[i].commandName;
+                            //cell3.appendChild(paramInput);
+                        }
+
+                        $('#ModalSendCommand').modal('show');
+
+                        return true;
+                    },
+                    error: function (req, status, error) {
+                        alert("Error " + status);
+                        return false;
+                    }
+                });
+            }
 
             //
             // Gets device information.  Connection String, Model ID, Primary/Secondary Keys, and connect/disconnect status
@@ -926,5 +1043,38 @@
 
                 enableDisableButtons(true);
             };
+
+            //
+            // Send command
+            //
+            //
+            // Gets device information.  Connection String, Model ID, Primary/Secondary Keys, and connect/disconnect status
+            //
+            var sendCommand = function (command, parameter) {
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("SendCommand", "IoTHub")',
+                    data: { deviceid:deviceid, command: command, parameter: parameter },
+                    success: function (response) {
+                    },
+                    error: function (req, status, error) {
+                        alert("Error " + status);
+                        return false;
+                    }
+                });
+            }
+
+
+            function RunCommand(id) {
+                var targetDeviceId = $("#DeviceList option:selected").text();
+                console.log("RunCommand Clicked : " + id);
+                console.log("RunCommand target : " + targetDeviceId);
+                var cmd = document.getElementById(id);
+                console.log("RunCommand cmd : " + cmd.value);
+                var param = document.getElementById(id + '-param');
+                console.log("RunCommand param : " + param.text());
+                sendCommand(targetDeviceId, cmd.text(), param.text());
+            }
         </script>
     }

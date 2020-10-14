@@ -69,6 +69,11 @@ namespace Portal.Controllers
 
         private async Task<string> Resolve(string dtmi)
         {
+            if (string.IsNullOrEmpty(dtmi))
+            {
+                return string.Empty;
+            }
+
             WebClient wc = new WebClient();
             // Apply model repository convention
             string dtmiPath = DtmiToPath(dtmi.ToString());
@@ -205,6 +210,68 @@ namespace Portal.Controllers
 
             return Json(deviceData);
         }
+
+        [HttpGet]
+        public async Task<ActionResult> GetCommand(string modelid)
+        {
+            List<COMMAND_DATA> commandData = new List<COMMAND_DATA>();
+
+            try
+            {
+                var dtmiContent = await Resolve(modelid);
+
+                if (!string.IsNullOrEmpty(dtmiContent))
+                {
+                    ModelParser parser = new ModelParser();
+                    parser.DtmiResolver = DtmiResolver;
+                    var parsedDtmis = await parser.ParseAsync(new List<string> { dtmiContent });
+
+                    var interfaces = parsedDtmis.Where(r => r.Value.EntityKind == DTEntityKind.Command).ToList();
+
+                    foreach (var dt in interfaces)
+                    {
+                        COMMAND_DATA data = new COMMAND_DATA();
+
+                        DTCommandInfo commandInfo = dt.Value as DTCommandInfo;
+
+                        if (commandInfo.DisplayName.Count > 0)
+                        {
+                            data.CommandDisplayName = commandInfo.DisplayName["en"];
+                        }
+
+                        if (commandInfo.Description.Count > 0)
+                        {
+                            data.CommandDescription = commandInfo.Description["en"];
+                        }
+
+                        data.CommandName = commandInfo.Name;
+
+                        if (commandInfo.Request != null)
+                        {
+                            data.requestName = commandInfo.Request.Name;
+                            data.requestKind = commandInfo.Request.Schema.EntityKind.ToString() ;
+                        }
+
+                        commandData.Add(data);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error {ex}");
+            }
+
+            return Json(commandData);
+        }
+
+        [HttpPost]
+        public bool SendCommand(string deviceid, string command, string parameter)
+        {
+
+            _logger.LogInformation($"SendCommand");
+            return true;
+        }
+
 
         // https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.devices.registrymanager?view=azure-dotnet
         [HttpPost]

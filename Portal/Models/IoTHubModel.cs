@@ -13,6 +13,18 @@ namespace Portal.Models
         public string unit { get; set; }
         public string dataType { get; set; }
     }
+
+    public class COMMAND_DATA
+    {
+        public string CommandName { get; set; }
+        public string CommandDisplayName { get; set; }
+
+        public string CommandDescription { get; set; }
+
+        public string requestName { get; set; }
+
+        public string requestKind { get; set; }
+    }
     public class DEVICE_DATA
     {
         public string deviceId { get; set; }
