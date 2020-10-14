@@ -100,7 +100,6 @@
                     </table>*@
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="btnSetModel" style="width:45%;padding:3.5px;"><i class="fas fa-plus"></i>Set Model ID</button>
                     <button type="button" id="DivClose" style="width:45%;padding:3.5px;" data-dismiss="modal"><i class="fas fa-times"></i>Cancel</button>
                 </div>
             </div>
@@ -371,11 +370,6 @@
             //
 
             $('#telemetryList').change(function () {
-                var telemetryText = $("#telemetryList option:selected").text();
-                var telemetryName = $("#telemetryList option:selected").val();
-                console.log("Telemetry : " + telemetryText);
-                console.log("Telemetry Name : " + telemetryName);
-                var targetDeviceId = $("#DeviceList option:selected").text();
                 runTsqPnP(targetDeviceId)
             });
 
@@ -695,9 +689,7 @@
                         var options = [];
 
                         for (var i = 0; i < Object.keys(json.telemetry).length; i++) {
-                            console.log("Telemetry : " + json.telemetry[i].telemetryDisplayName);
-                            console.log("Telemetry : " + json.telemetry[i].telemetryName);
-
+                            console.log("Telemetry : " + JSON.stringify(json.telemetry[i]));
                             var option = document.createElement('option');
                             option.text = json.telemetry[i].telemetryDisplayName + " (" + json.telemetry[i].unit + ")  ";
                             option.value = json.telemetry[i].telemetryName + ";" + json.telemetry[i].dataType;
@@ -814,8 +806,14 @@
                 linechart = null;
                 // create aggregate expressions, they are S1/S2 SKU query objects
                 var linechartTsqExpressions = [];
-                var telemetryText = $("#telemetryList option:selected").text();
+                var telemetryText  = $("#telemetryList option:selected").text();
                 var telemetryValue = $("#telemetryList option:selected").val();
+
+                if (telemetryValue == null) {
+                    return;
+                }
+
+                console.log("runTsqPnP " + telemetryValue);
 
                 var telemetryName = telemetryValue.split(";")[0]
                 var telemetryUnit = telemetryValue.split(";")[1]
