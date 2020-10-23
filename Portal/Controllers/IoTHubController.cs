@@ -265,10 +265,18 @@ namespace Portal.Controllers
         }
 
         [HttpPost]
-        public bool SendCommand(string deviceid, string command, string parameter)
+        public async Task<bool> SendCommand(string deviceid, string command, string payload)
         {
+            try
+            {
+                var response = await _helper.SendMethod(deviceid, command, payload);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error {ex}");
+            }
 
-            _logger.LogInformation($"SendCommand");
             return true;
         }
 

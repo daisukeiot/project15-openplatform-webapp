@@ -370,6 +370,8 @@
             //
 
             $('#telemetryList').change(function () {
+                var targetDeviceId = $("#DeviceList option:selected").text();
+                console.log("telemetryList change " + targetDeviceId);
                 runTsqPnP(targetDeviceId)
             });
 
@@ -620,21 +622,23 @@
                             fieldSet.appendChild(divDesc);
 
                             divCmd.setAttribute('id', i + '-command');
+                            divCmd.setAttribute('value', response[i].commandName);
                             divCmd.innerHTML = 'Command Name : ' + response[i].commandName;
                             fieldSet.appendChild(divCmd);
 
                             divParam.setAttribute('id', i + '-param');
+                            divParam.setAttribute('value', response[i].requestName);
                             divParam.innerHTML = 'Command Parameter : ' + response[i].requestName + ' (' + response[i].requestKind + ')';
                             fieldSet.appendChild(divParam);
 
-                            paramInput.id = i + '-request';
+                            paramInput.id = i + '-input';
                             fieldSet.appendChild(paramInput);
 
                             var button = document.createElement('input');
                             button.setAttribute('id', i + '-btn');
                             button.setAttribute('type', 'button');
                             button.setAttribute('value', 'Run Command');
-                            button.setAttribute('onclick', 'RunCommand("' + response[i].commandName + '")');
+                            button.setAttribute('onclick', 'RunCommand("' + i + '")');
                             fieldSet.appendChild(button);
 
                             commandModal.appendChild(fieldSet);
@@ -1058,12 +1062,12 @@
             //
             // Gets device information.  Connection String, Model ID, Primary/Secondary Keys, and connect/disconnect status
             //
-            var sendCommand = function (command, parameter) {
+            var sendCommand = function (deviceid, command, payload) {
 
                 $.ajax({
                     type: "POST",
                     url: '@Url.Action("SendCommand", "IoTHub")',
-                    data: { deviceid:deviceid, command: command, parameter: parameter },
+                    data: { deviceid: deviceid, command: command, payload: payload },
                     success: function (response) {
                     },
                     error: function (req, status, error) {
@@ -1073,16 +1077,24 @@
                 });
             }
 
-
             function RunCommand(id) {
+                var cmd = document.getElementById(id + '-command').getAttribute("value");
                 var targetDeviceId = $("#DeviceList option:selected").text();
-                console.log("RunCommand Clicked : " + id);
-                console.log("RunCommand target : " + targetDeviceId);
-                var cmd = document.getElementById(id);
-                console.log("RunCommand cmd : " + cmd.value);
-                var param = document.getElementById(id + '-param');
-                console.log("RunCommand param : " + param.text());
-                sendCommand(targetDeviceId, cmd.text(), param.text());
+                var param = document.getElementById(id + '-param').getAttribute("value");
+                var input = document.getElementById(id + '-input').value;
+                var payload = `{'${param}':'${input}'}`;
+                console.log("RunCommand " + id);
+                console.log("RunCommand cmd     : " + cmd);
+                console.log("RunCommand target  : " + targetDeviceId);
+                console.log("RunCommand payload : " + payload);
+
+                var regex = new RegExp("^(-?)P(?=\\d|T\\d)(?:(\\d+)Y)?(?:(\\d+)M)?(?:(\\d+)([DW]))?(?:T(?:(\\d+)H)?(?:(\\d+)M)?(?:(\\d+(?:\\.\\d+)?)S)?)?$")
+                if (!regex.test(input)) {
+                    alert("Invalid");
+                    return false;
+                }
+
+                sendCommand(targetDeviceId, cmd, payload);
             }
         </script>
     }

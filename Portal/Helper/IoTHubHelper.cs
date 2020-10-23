@@ -28,6 +28,7 @@ namespace Portal.Helper
         Task<IEnumerable<SelectListItem>> GetDevices();
         Task<Twin> ConnectDevice(string connectionString, string modelId);
         Task<Twin> SendTelemetry(string connectionString, string modelId);
+        Task<CloudToDeviceMethodResult> SendMethod(string deviceId, string command, string payload);
         string GetIoTHubName(string connectionString);
     }
     public class IoTHubHelper : IIoTHubHelper
@@ -37,12 +38,14 @@ namespace Portal.Helper
         private readonly AppSettings _appSettings;
         private DeviceClient _deviceClient;
         private bool _isConnected;
+        private readonly ServiceClient _serviceClient;
 
         public IoTHubHelper(IOptions<AppSettings> config, ILogger<IoTHubHelper> logger)
         {
             _logger = logger;
             _appSettings = config.Value;
             _registryManager = RegistryManager.CreateFromConnectionString(_appSettings.IoTHub.ConnectionString);
+            _serviceClient = ServiceClient.CreateFromConnectionString(_appSettings.IoTHub.ConnectionString);
             _deviceClient = null;
             _isConnected = false;
         }
@@ -290,6 +293,22 @@ namespace Portal.Helper
             await _deviceClient.SendEventAsync(message).ConfigureAwait(false);
 
             return twin;
+        }
+
+        public async Task<CloudToDeviceMethodResult> SendMethod(string deviceId, string command, string payload)
+        {
+            if (_serviceClient != null)
+            {
+                var methodInvocation = new CloudToDeviceMethod(command) {
+                    ResponseTimeout = TimeSpan.FromSeconds(30)
+                };
+                methodInvocation.SetPayloadJson(payload);
+                var response = await _serviceClient.InvokeDeviceMethodAsync(deviceId, methodInvocation);
+                Console.WriteLine("Response status: {0}, payload:", response.Status);
+                Console.WriteLine(response.GetPayloadAsJson());
+                return response;
+            }
+            return null;
         }
     }
 }
