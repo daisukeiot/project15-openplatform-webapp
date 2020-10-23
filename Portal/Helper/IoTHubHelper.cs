@@ -7,12 +7,16 @@ using Microsoft.Azure.Devices.Common.Exceptions;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Rest;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Portal.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,6 +43,7 @@ namespace Portal.Helper
         private DeviceClient _deviceClient;
         private bool _isConnected;
         private readonly ServiceClient _serviceClient;
+        private readonly DigitalTwinClient _digitalTwinClient;
 
         public IoTHubHelper(IOptions<AppSettings> config, ILogger<IoTHubHelper> logger)
         {
@@ -46,6 +51,7 @@ namespace Portal.Helper
             _appSettings = config.Value;
             _registryManager = RegistryManager.CreateFromConnectionString(_appSettings.IoTHub.ConnectionString);
             _serviceClient = ServiceClient.CreateFromConnectionString(_appSettings.IoTHub.ConnectionString);
+            _digitalTwinClient = DigitalTwinClient.CreateFromConnectionString(_appSettings.IoTHub.ConnectionString);
             _deviceClient = null;
             _isConnected = false;
         }
@@ -297,7 +303,25 @@ namespace Portal.Helper
 
         public async Task<CloudToDeviceMethodResult> SendMethod(string deviceId, string command, string payload)
         {
-            if (_serviceClient != null)
+            if (_digitalTwinClient != null)
+            {
+                try
+                {
+                    HttpOperationResponse<DigitalTwinCommandResponse, DigitalTwinInvokeCommandHeaders> invokeCommandResponse = await _digitalTwinClient
+                        .InvokeCommandAsync(deviceId, command, payload);
+
+                    _logger.LogDebug($"Command {command} was invoked on the {deviceId} digital twin." +
+                        $"\nDevice returned status: {invokeCommandResponse.Body.Status}.");
+                }
+                catch (HttpOperationException e)
+                {
+                    if (e.Response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                    }
+                }
+
+            }
+            else if (_serviceClient != null)
             {
                 var methodInvocation = new CloudToDeviceMethod(command) {
                     ResponseTimeout = TimeSpan.FromSeconds(30)

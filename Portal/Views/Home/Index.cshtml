@@ -815,7 +815,6 @@
 
             var runTsqPnP = function (deviceId) {
 
-                console.log("runTsqPnP " + deviceId);
                 linechart = null;
                 // create aggregate expressions, they are S1/S2 SKU query objects
                 var linechartTsqExpressions = [];
@@ -826,16 +825,9 @@
                     return;
                 }
 
-                console.log("runTsqPnP " + telemetryValue);
-
                 var telemetryName = telemetryValue.split(";")[0]
                 var telemetryUnit = telemetryValue.split(";")[1]
-
-                console.log("Display : " + telemetryText);
-                console.log("Name    : " + telemetryName);
-
                 var dataName = '$event.' + telemetryName + '.' + telemetryUnit
-                console.log("Event : " + dataName);
 
                 var endDate = new Date();
                 var startDate = new Date(endDate.valueOf() - 1000 * 60 * 10);
@@ -864,13 +856,11 @@
 
                         var transformedResult = tsiClient.ux.transformTsqResultsForVisualization(result, linechartTsqExpressions);
 
-                        console.log("transformedResult length " + transformedResult.length);
-
                         //Create the line chart.
                         if (lineChart == null) {
                             lineChart = new tsiClient.ux.LineChart(document.getElementById('tsiLineChart'));
                         }
-                        console.log("Line Chart");
+
                         lineChart.render(transformedResult, {
                             dataType: 'numeric', theme: 'dark', grid: true, tooltip: true, legend: 'compact', offset: 'Local',
                         }, linechartTsqExpressions);
